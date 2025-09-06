@@ -1,1 +1,18 @@
-{}
+{
+  "pages\\index.jsx -> @studio-freight/lenis": {
+    "id": "pages\\index.jsx -> @studio-freight/lenis",
+    "files": [
+      "static/chunks/node_modules_studio-freight_lenis_dist_lenis_mjs.js"
+    ]
+  },
+  "pages\\index.jsx -> gsap": {
+    "id": "pages\\index.jsx -> gsap",
+    "files": []
+  },
+  "pages\\index.jsx -> gsap/ScrollTrigger": {
+    "id": "pages\\index.jsx -> gsap/ScrollTrigger",
+    "files": [
+      "static/chunks/node_modules_gsap_ScrollTrigger_js.js"
+    ]
+  }
+}
