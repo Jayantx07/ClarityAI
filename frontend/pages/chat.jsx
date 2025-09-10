@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import Nav from '../components/Nav';
+import { Layout, Navbar } from '../components/layout';
+import { Button, Card } from '../components/ui';
 import BreathingExercise from '../components/BreathingExercise';
 import SoundTherapy from '../components/SoundTherapy';
 import Gamification, { AchievementNotification } from '../components/Gamification';
@@ -140,12 +141,12 @@ export default function ChatPage() {
   }
 
   return (
-    <div>
-      <Nav />
+    <Layout>
+      <Navbar />
       <main className="mx-auto max-w-3xl px-4 py-6 space-y-4">
         <h2 className="text-2xl font-semibold">Chat Companion</h2>
         
-        <div className="card space-y-3 h-[60vh] overflow-y-auto">
+        <Card className="space-y-3 h-[60vh] overflow-y-auto">
           {messages.map((m, i) => (
             <div key={i} className={m.role === 'user' ? 'text-right' : 'text-left'}>
               <div className={`inline-block px-3 py-2 rounded-lg max-w-[80%] ${
@@ -201,7 +202,7 @@ export default function ChatPage() {
               </div>
             </div>
           )}
-        </div>
+        </Card>
         
         <form onSubmit={sendMessage} className="flex gap-2">
           <input 
@@ -210,9 +211,9 @@ export default function ChatPage() {
             onChange={e => setInput(e.target.value)} 
             placeholder="Share your mood or thoughts..." 
           />
-          <button className="btn-primary" type="submit" disabled={loading}>
+          <Button type="submit" disabled={loading}>
             Send
-          </button>
+          </Button>
         </form>
         
         <div className="text-xs text-white/50 text-center">
@@ -236,7 +237,7 @@ export default function ChatPage() {
         achievement={currentAchievement}
         onClose={() => setCurrentAchievement(null)}
       />
-    </div>
+    </Layout>
   );
 }
 

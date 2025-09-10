@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import Nav from '../components/Nav';
+import { Layout, Navbar } from '../components/layout';
+import { Button, Card } from '../components/ui';
 import PaintingCanvas from '../components/PaintingCanvas';
 import { apiGet, apiPost } from '../lib/api';
 import { ensureAnonymousAuth } from '../lib/firebaseClient';
@@ -70,13 +71,13 @@ export default function JournalPage() {
   };
 
   return (
-    <div>
-      <Nav />
+    <Layout>
+      <Navbar />
       <main className="mx-auto max-w-4xl px-4 py-6 space-y-6">
         <h2 className="text-2xl font-semibold">AI Journaling Assistant</h2>
         
         {/* Writing Area */}
-        <div className="card space-y-4">
+        <Card className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold">Express Your Thoughts</h3>
             <button
@@ -104,19 +105,18 @@ export default function JournalPage() {
             <div className="text-sm text-white/60">
               {text.length} characters
             </div>
-            <button 
-              className="btn-primary" 
+            <Button 
               onClick={save}
               disabled={!text.trim()}
             >
               Save Entry
-            </button>
+            </Button>
           </div>
-        </div>
+        </Card>
 
         {/* AI Reframe */}
         {!!reframe && (
-          <div className="card">
+          <Card>
             <div className="flex items-center gap-2 mb-3">
               <div className="text-lg">🤖</div>
               <div className="font-semibold">AI Reflection</div>
@@ -131,12 +131,12 @@ export default function JournalPage() {
                 </div>
               </div>
             )}
-          </div>
+          </Card>
         )}
 
         {/* Creative Expression Suggestion */}
         {currentSentiment && (currentSentiment.emotion === 'sad' || currentSentiment.emotion === 'anger') && (
-          <div className="card">
+          <Card>
             <div className="flex items-center justify-between">
               <div>
                 <div className="font-semibold mb-1">🎨 Try Creative Expression</div>
@@ -144,18 +144,17 @@ export default function JournalPage() {
                   Sometimes words aren't enough. Express your emotions through color and movement.
                 </div>
               </div>
-              <button
+              <Button
                 onClick={() => setPaintingActive(true)}
-                className="btn-primary"
               >
                 Open Canvas
-              </button>
+              </Button>
             </div>
-          </div>
+          </Card>
         )}
 
         {/* Recent Entries */}
-        <div className="card">
+        <Card>
           <h3 className="font-semibold mb-4">Recent Entries</h3>
           <div className="space-y-4">
             {entries.slice().reverse().map(entry => (
@@ -181,7 +180,7 @@ export default function JournalPage() {
               </div>
             ))}
           </div>
-        </div>
+        </Card>
       </main>
 
       {/* Painting Canvas */}
@@ -189,7 +188,7 @@ export default function JournalPage() {
         isActive={paintingActive} 
         onClose={() => setPaintingActive(false)} 
       />
-    </div>
+    </Layout>
   );
 }
 

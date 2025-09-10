@@ -13,6 +13,9 @@ module.exports = {
           dark: '#4C46CC',
           light: '#8E89FF'
         }
+      },
+      fontFamily: {
+        recoleta: ['Recoleta', 'serif']
       }
     }
   },

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import Nav from '../components/Nav';
+import { Layout, Navbar } from '../components/layout';
+import { Button, Card } from '../components/ui';
 import BreathingExercise from '../components/BreathingExercise';
 import { apiGet, apiPost } from '../lib/api';
 import { ensureAnonymousAuth } from '../lib/firebaseClient';
@@ -62,13 +63,13 @@ export default function MoodPage() {
   };
 
   return (
-    <div>
-      <Nav />
+    <Layout>
+      <Navbar />
       <main className="mx-auto max-w-4xl px-4 py-6 space-y-6">
         <h2 className="text-2xl font-semibold">Mood Analytics</h2>
         
         {/* Current Mood Input */}
-        <div className="card space-y-4">
+        <Card className="space-y-4">
           <h3 className="font-semibold">How are you feeling right now?</h3>
           
           <div className="flex items-center gap-4">
@@ -118,15 +119,15 @@ export default function MoodPage() {
             onChange={e => setNote(e.target.value)} 
           />
           
-          <button className="btn-primary" onClick={submitMood}>
+          <Button onClick={submitMood}>
             Log Mood
-          </button>
-        </div>
+          </Button>
+        </Card>
 
         {/* Analytics Dashboard */}
         <div className="grid md:grid-cols-2 gap-6">
           {/* Mood Trend */}
-          <div className="card">
+          <Card>
             <h3 className="font-semibold mb-4">7-Day Trend</h3>
             <div className="space-y-2">
               {logs.slice(-7).map((log, i) => (
@@ -149,10 +150,10 @@ export default function MoodPage() {
                 </div>
               ))}
             </div>
-          </div>
+          </Card>
 
           {/* Insights */}
-          <div className="card">
+          <Card>
             <h3 className="font-semibold mb-4">Insights</h3>
             <div className="space-y-3 text-sm">
               {logs.length > 0 && (
@@ -174,11 +175,11 @@ export default function MoodPage() {
                 </>
               )}
             </div>
-          </div>
+          </Card>
         </div>
 
         {/* Recent Entries */}
-        <div className="card">
+        <Card>
           <h3 className="font-semibold mb-4">Recent Check-ins</h3>
           <div className="space-y-3">
             {logs.slice().reverse().map(log => (
@@ -207,7 +208,7 @@ export default function MoodPage() {
               </div>
             ))}
           </div>
-        </div>
+        </Card>
       </main>
 
       {/* Breathing Exercise */}
@@ -215,7 +216,7 @@ export default function MoodPage() {
         isActive={breathingActive} 
         onComplete={() => setBreathingActive(false)} 
       />
-    </div>
+    </Layout>
   );
 }
 

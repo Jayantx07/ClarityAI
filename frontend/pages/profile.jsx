@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import Nav from '../components/Nav';
+import { Layout, Navbar } from '../components/layout';
+import { Button, Card } from '../components/ui';
 import Gamification, { AchievementNotification } from '../components/Gamification';
 import { apiGet, apiPost } from '../lib/api';
 import { ensureAnonymousAuth } from '../lib/firebaseClient';
@@ -57,25 +58,25 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div>
-        <Nav />
+      <Layout>
+        <Navbar />
         <main className="mx-auto max-w-4xl px-4 py-6">
           <div className="text-center">Loading your profile...</div>
         </main>
-      </div>
+      </Layout>
     );
   }
 
   return (
-    <div>
-      <Nav />
+    <Layout>
+      <Navbar />
       <main className="mx-auto max-w-4xl px-4 py-6 space-y-6">
         <h2 className="text-2xl font-semibold">Your Wellness Journey</h2>
         
         {stats && (
           <>
             {/* Level Progress */}
-            <div className="card">
+            <Card>
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <h3 className="font-semibold">Level {stats.level}</h3>
@@ -96,30 +97,30 @@ export default function ProfilePage() {
               <div className="text-xs text-white/60 mt-1">
                 {stats.points % 100}/100 points to next level
               </div>
-            </div>
+            </Card>
 
             {/* Stats Overview */}
             <div className="grid md:grid-cols-4 gap-4">
-              <div className="card text-center">
+              <Card className="text-center">
                 <div className="text-2xl font-bold text-brand">{stats.streak}</div>
                 <div className="text-sm text-white/70">Day Streak</div>
-              </div>
-              <div className="card text-center">
+              </Card>
+              <Card className="text-center">
                 <div className="text-2xl font-bold text-brand">{stats.totalEntries}</div>
                 <div className="text-sm text-white/70">Journal Entries</div>
-              </div>
-              <div className="card text-center">
+              </Card>
+              <Card className="text-center">
                 <div className="text-2xl font-bold text-brand">{stats.totalMoods}</div>
                 <div className="text-sm text-white/70">Mood Logs</div>
-              </div>
-              <div className="card text-center">
+              </Card>
+              <Card className="text-center">
                 <div className="text-2xl font-bold text-brand">{stats.totalChats}</div>
                 <div className="text-sm text-white/70">Chat Sessions</div>
-              </div>
+              </Card>
             </div>
 
             {/* Badges */}
-            <div className="card">
+            <Card>
               <h3 className="font-semibold mb-4">Achievements</h3>
               {gamification.badges.length > 0 ? (
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -139,11 +140,11 @@ export default function ProfilePage() {
                   <div>No badges yet. Keep using the app to earn them!</div>
                 </div>
               )}
-            </div>
+            </Card>
 
             {/* Available Badges */}
             {gamification.availableBadges.length > 0 && (
-              <div className="card">
+              <Card>
                 <h3 className="font-semibold mb-4">Available Badges</h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   {gamification.availableBadges.slice(0, 6).map((badge) => (
@@ -156,39 +157,39 @@ export default function ProfilePage() {
                     </div>
                   ))}
                 </div>
-              </div>
+              </Card>
             )}
 
             {/* Quick Actions */}
-            <div className="card">
+            <Card>
               <h3 className="font-semibold mb-4">Continue Your Journey</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <button 
+                <Button 
                   onClick={() => window.location.href = '/mood'}
-                  className="btn-primary text-sm"
+                  size="sm"
                 >
                   📊 Log Mood
-                </button>
-                <button 
+                </Button>
+                <Button 
                   onClick={() => window.location.href = '/journal'}
-                  className="btn-primary text-sm"
+                  size="sm"
                 >
                   📝 Journal
-                </button>
-                <button 
+                </Button>
+                <Button 
                   onClick={() => window.location.href = '/chat'}
-                  className="btn-primary text-sm"
+                  size="sm"
                 >
                   💬 Chat
-                </button>
-                <button 
+                </Button>
+                <Button 
                   onClick={() => window.location.href = '/resources'}
-                  className="btn-primary text-sm"
+                  size="sm"
                 >
                   📚 Resources
-                </button>
+                </Button>
               </div>
-            </div>
+            </Card>
           </>
         )}
       </main>
@@ -198,7 +199,7 @@ export default function ProfilePage() {
         achievement={currentAchievement}
         onClose={() => setCurrentAchievement(null)}
       />
-    </div>
+    </Layout>
   );
 }
 

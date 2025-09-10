@@ -1,0 +1,85 @@
+import { useRef, useState, useEffect } from 'react';
+
+export default function CustomCursor() {
+  const cursorRef = useRef(null);
+  const [isHovering, setIsHovering] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const updateCursor = (e) => {
+      if (cursorRef.current) {
+        cursorRef.current.style.left = `${e.clientX}px`;
+        cursorRef.current.style.top = `${e.clientY}px`;
+      }
+      setIsVisible(true);
+    };
+
+    const handleMouseEnter = (e) => {
+      const target = e.target;
+      if (target && typeof target.matches === 'function') {
+        const isInteractive = target.matches('button, a, [role="button"], input, textarea, select, [data-cursor-hover]') ||
+                             target.closest('button, a, [role="button"], input, textarea, select, [data-cursor-hover]');
+        setIsHovering(isInteractive);
+      }
+    };
+
+    const handleMouseLeave = () => {
+      setIsHovering(false);
+    };
+
+    const handleMouseOut = () => {
+      setIsVisible(false);
+    };
+
+    document.addEventListener('mousemove', updateCursor);
+    document.addEventListener('mouseenter', handleMouseEnter, true);
+    document.addEventListener('mouseleave', handleMouseLeave, true);
+    document.addEventListener('mouseout', handleMouseOut);
+    document.body.style.cursor = 'none';
+
+    return () => {
+      document.removeEventListener('mousemove', updateCursor);
+      document.removeEventListener('mouseenter', handleMouseEnter, true);
+      document.removeEventListener('mouseleave', handleMouseLeave, true);
+      document.removeEventListener('mouseout', handleMouseOut);
+      document.body.style.cursor = 'auto';
+    };
+  }, []);
+
+  if (!isVisible) return null;
+
+  return (
+    <div
+      ref={cursorRef}
+      className="fixed pointer-events-none z-[9999] transition-all duration-100 ease-out"
+      style={{
+        left: 0,
+        top: 0,
+        transform: 'translate(-50%, -50%)'
+      }}
+    >
+      {/* Outer circle */}
+      <div
+        className={`absolute rounded-full border-2 border-white transition-all duration-300 ease-out ${
+          isHovering ? 'w-10 h-10 border-opacity-60' : 'w-6 h-6 border-opacity-40'
+        }`}
+        style={{
+          left: '50%',
+          top: '50%',
+          transform: 'translate(-50%, -50%)'
+        }}
+      />
+      {/* Inner dot */}
+      <div
+        className={`absolute bg-white rounded-full transition-all duration-300 ease-out ${
+          isHovering ? 'w-1.5 h-1.5' : 'w-1 h-1'
+        }`}
+        style={{
+          left: '50%',
+          top: '50%',
+          transform: 'translate(-50%, -50%)'
+        }}
+      />
+    </div>
+  );
+}
