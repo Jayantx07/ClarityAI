@@ -1,0 +1,19 @@
+{
+  "cors": {
+    "origin": "http://localhost:3000"
+  },
+  "gemini": {
+    "key": "YOUR_GEMINI_API_KEY"
+  },
+  "huggingface": {
+    "key": "YOUR_HF_API_KEY"
+  },
+  "vertex": {
+    "project_id": "your-vertex-project-id",
+    "location": "us-central1",
+    "credentials_json": "base64-encoded-service-account"
+  },
+  "db": {
+    "url": "your-db-url"
+  }
+}
