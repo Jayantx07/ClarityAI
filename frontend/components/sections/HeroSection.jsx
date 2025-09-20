@@ -3,17 +3,36 @@ import { AnimatedButton } from '../ui';
 export default function HeroSection() {
   return (
     <section className="hero-section relative min-h-screen flex items-center justify-center">
-      {/* Full Width Video Background */}
-      <div className="absolute inset-0 -z-10 w-full h-full">
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          className="w-full h-full object-cover"
-        >
-          <source src="/Intro.mp4" type="video/mp4" />
-        </video>
+      {/* Background Video and Model Image */}
+      <div className="absolute inset-0 w-full h-full">
+        {/* Background Video */}
+        <div className="absolute inset-0 w-full h-full">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{ filter: 'brightness(0.8)' }}
+          >
+            <source src="/Bg.mp4" type="video/mp4" />
+          </video>
+        </div>
+
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#001242]/60 via-[#004080]/50 to-[#006d86]/40"></div>
+
+        {/* Model Image */}
+        <div className="absolute inset-0 flex items-center justify-end overflow-hidden">
+          <img
+            src="/image/Model.png"
+            alt="Background Model"
+            className="h-[120vh] w-auto max-w-none object-contain opacity-95"
+            style={{
+              transform: 'translateX(15%)',
+            }}
+          />
+        </div>
       </div>
 
       <div className="w-full text-center relative z-10 px-8">

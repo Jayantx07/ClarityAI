@@ -1,14 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Layout, Navbar } from '../components/layout';
-import { Button, Card } from '../components/ui';
+import { Button } from '../components/ui';
 import BreathingExercise from '../components/BreathingExercise';
 import SoundTherapy from '../components/SoundTherapy';
 import Gamification, { AchievementNotification } from '../components/Gamification';
+import { BgVideo } from '../components/ui';
 import { apiPost } from '../lib/api';
 import { ensureAnonymousAuth } from '../lib/firebaseClient';
 import { analyzeSentiment, getResponseStyle } from '../lib/sentiment';
 
 export default function ChatPage() {
+  const chatContainerRef = useRef(null);
   const [messages, setMessages] = useState([{ 
     role: 'assistant', 
     content: 'Hi! I\'m ClarityAI, your empathetic companion. How are you feeling today? 😊',
@@ -22,6 +24,13 @@ export default function ChatPage() {
   const [soundActive, setSoundActive] = useState(false);
   const [soundFrequency, setSoundFrequency] = useState('alpha');
   const [currentAchievement, setCurrentAchievement] = useState(null);
+
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
   
   const gamification = Gamification({ userId: 'anon' });
 
@@ -142,101 +151,131 @@ export default function ChatPage() {
 
   return (
     <Layout>
-      <Navbar />
-      <main className="mx-auto max-w-3xl px-4 py-6 space-y-4">
-        <h2 className="text-2xl font-semibold">Chat Companion</h2>
-        
-        <Card className="space-y-3 h-[60vh] overflow-y-auto">
-          {messages.map((m, i) => (
-            <div key={i} className={m.role === 'user' ? 'text-right' : 'text-left'}>
-              <div className={`inline-block px-3 py-2 rounded-lg max-w-[80%] ${
-                m.role === 'user' 
-                  ? 'bg-brand text-white' 
-                  : 'bg-white/10'
-              }`}>
-                <div className="flex items-center gap-2 mb-1">
-                  {m.role === 'assistant' && (
-                    <span className="text-lg">{getMoodEmoji(m.mood)}</span>
-                  )}
-                  {m.role === 'assistant' && m.mood && m.mood !== 'welcome' && (
-                    <span className="text-xs bg-white/20 px-2 py-1 rounded">
-                      {m.mood === 'low' ? 'Feeling Down' : 
-                       m.mood === 'positive' ? 'Feeling Good' : 
-                       m.mood === 'neutral' ? 'Feeling Okay' : 
-                       m.mood === 'crisis' ? 'Crisis Support' :
-                       m.mood === 'stress' ? 'Feeling Stressed' :
-                       m.mood === 'sad' ? 'Feeling Sad' :
-                       m.mood === 'anger' ? 'Feeling Angry' : 'Listening'}
-                    </span>
-                  )}
-                  {m.role === 'user' && m.sentiment && (
-                    <span className={`text-xs px-2 py-1 rounded ${getSentimentColor(m.sentiment)}`}>
-                      {m.sentiment.emotion} ({Math.round(m.sentiment.confidence * 100)}%)
-                    </span>
-                  )}
-                </div>
-                <div className="whitespace-pre-wrap">{m.content}</div>
-                
-                {m.suggestedActivity && m.suggestedActivity !== 'crisis_support' && (
-                  <div className="mt-2 p-2 bg-brand/20 rounded border-l-2 border-brand">
-                    <div className="text-xs font-semibold text-brand-light mb-1">
-                      💡 Suggested Activity:
+      <BgVideo />
+      <div className="min-h-screen">
+        <Navbar />
+        <div className="container mx-auto px-4 py-8">
+          <div className="max-w-5xl mx-auto">
+            {/* Chat Interface Container */}
+            <div className="relative backdrop-blur-lg bg-white/10 rounded-2xl border border-white/20 shadow-2xl overflow-hidden">
+              {/* Messages Container */}
+              <div 
+                ref={chatContainerRef}
+                className="h-[70vh] overflow-y-auto p-6 space-y-6 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent"
+              >
+                {messages.map((m, i) => (
+                  <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                    <div 
+                      className={`max-w-[80%] ${
+                        m.role === 'user' ? 'bg-white/20' : 'bg-white/15'
+                      } backdrop-blur-sm rounded-2xl px-6 py-4 shadow-lg
+                      ${m.role === 'user' ? 'rounded-tr-sm' : 'rounded-tl-sm'}
+                      transform transition-all duration-300 hover:scale-[1.02]`}
+                    >
+                      <div className="flex items-center gap-2 mb-1">
+                        {m.role === 'assistant' && (
+                          <span className="text-lg">{getMoodEmoji(m.mood)}</span>
+                        )}
+                        {m.role === 'assistant' && m.mood && m.mood !== 'welcome' && (
+                          <span className="text-xs bg-white/20 px-2 py-1 rounded">
+                            {m.mood === 'low' ? 'Feeling Down' : 
+                             m.mood === 'positive' ? 'Feeling Good' : 
+                             m.mood === 'neutral' ? 'Feeling Okay' : 
+                             m.mood === 'crisis' ? 'Crisis Support' :
+                             m.mood === 'stress' ? 'Feeling Stressed' :
+                             m.mood === 'sad' ? 'Feeling Sad' :
+                             m.mood === 'anger' ? 'Feeling Angry' : 'Listening'}
+                          </span>
+                        )}
+                        {m.role === 'user' && m.sentiment && (
+                          <span className={`text-xs px-2 py-1 rounded ${getSentimentColor(m.sentiment)}`}>
+                            {m.sentiment.emotion} ({Math.round(m.sentiment.confidence * 100)}%)
+                          </span>
+                        )}
+                      </div>
+                      <div className="whitespace-pre-wrap">{m.content}</div>
+                      
+                      {m.suggestedActivity && m.suggestedActivity !== 'crisis_support' && (
+                        <div className="mt-2 p-2 bg-white/10 rounded border-l-2 border-white/40">
+                          <div className="text-xs font-semibold text-white/80 mb-1">
+                            💡 Suggested Activity:
+                          </div>
+                          <div className="text-sm text-white/70">
+                            {m.suggestedActivity === 'breathing' && 'Try a breathing exercise to help you relax'}
+                            {m.suggestedActivity === 'sound_therapy' && 'Listen to calming sounds to reduce stress'}
+                            {m.suggestedActivity === 'journaling' && 'Write down your thoughts to process your feelings'}
+                            {m.suggestedActivity === 'chat' && 'Continue our conversation - I\'m here to listen'}
+                          </div>
+                        </div>
+                      )}
                     </div>
-                    <div className="text-sm">
-                      {m.suggestedActivity === 'breathing' && 'Try a breathing exercise to help you relax'}
-                      {m.suggestedActivity === 'sound_therapy' && 'Listen to calming sounds to reduce stress'}
-                      {m.suggestedActivity === 'journaling' && 'Write down your thoughts to process your feelings'}
-                      {m.suggestedActivity === 'chat' && 'Continue our conversation - I\'m here to listen'}
+                  </div>
+                ))}
+                
+                {loading && (
+                  <div className="flex justify-start">
+                    <div className="bg-white/15 backdrop-blur-sm rounded-2xl px-6 py-4 shadow-lg rounded-tl-sm">
+                      <div className="flex space-x-2">
+                        <div className="w-2 h-2 bg-white/60 rounded-full animate-bounce" 
+                          style={{ animationDelay: '0ms' }}></div>
+                        <div className="w-2 h-2 bg-white/60 rounded-full animate-bounce" 
+                          style={{ animationDelay: '150ms' }}></div>
+                        <div className="w-2 h-2 bg-white/60 rounded-full animate-bounce" 
+                          style={{ animationDelay: '300ms' }}></div>
+                      </div>
                     </div>
                   </div>
                 )}
               </div>
-            </div>
-          ))}
-          
-          {loading && (
-            <div className="text-center">
-              <div className="inline-flex items-center gap-2 text-sm text-white/70">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-brand"></div>
-                Thinking...
+
+              {/* Input Container */}
+              <div className="relative border-t border-white/20">
+                <form onSubmit={sendMessage} className="flex">
+                  <input
+                    type="text"
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    placeholder="Share your thoughts..."
+                    className="w-full bg-white/10 backdrop-blur-md px-6 py-4 text-white placeholder-white/50 
+                      focus:outline-none focus:ring-0 text-lg font-light"
+                  />
+                  <button
+                    type="submit"
+                    disabled={loading || !input.trim()}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 px-4 py-2 rounded-full
+                      bg-white/20 hover:bg-white/30 transition-all duration-300 disabled:opacity-50
+                      disabled:hover:bg-white/20 text-white/90"
+                  >
+                    Send
+                  </button>
+                </form>
               </div>
             </div>
-          )}
-        </Card>
-        
-        <form onSubmit={sendMessage} className="flex gap-2">
-          <input 
-            className="flex-1 px-3 py-2 rounded-lg bg-white/10 border border-white/10 focus:border-brand focus:outline-none" 
-            value={input} 
-            onChange={e => setInput(e.target.value)} 
-            placeholder="Share your mood or thoughts..." 
-          />
-          <Button type="submit" disabled={loading}>
-            Send
-          </Button>
-        </form>
-        
-        <div className="text-xs text-white/50 text-center">
-          Try: 😊 feeling good, 😞 tough day, 😰 stressed, or 😐 just okay
-        </div>
-      </main>
 
-      {/* Wellness Components */}
-      <BreathingExercise 
-        isActive={breathingActive} 
-        onComplete={() => setBreathingActive(false)} 
-      />
-      <SoundTherapy 
-        isActive={soundActive} 
-        frequency={soundFrequency}
-        onClose={() => setSoundActive(false)}
-      />
-      
-      {/* Achievement Notifications */}
-      <AchievementNotification 
-        achievement={currentAchievement}
-        onClose={() => setCurrentAchievement(null)}
-      />
+            {/* Helper Text */}
+            <div className="text-xs text-white/50 text-center mt-4">
+              Try: 😊 feeling good, 😞 tough day, 😰 stressed, or 😐 just okay
+            </div>
+          </div>
+        </div>
+
+        {/* Wellness Components */}
+        <BreathingExercise 
+          isActive={breathingActive} 
+          onComplete={() => setBreathingActive(false)} 
+        />
+        <SoundTherapy 
+          isActive={soundActive} 
+          frequency={soundFrequency}
+          onClose={() => setSoundActive(false)}
+        />
+        
+        {/* Achievement Notifications */}
+        <AchievementNotification 
+          achievement={currentAchievement}
+          onClose={() => setCurrentAchievement(null)}
+        />
+      </div>
     </Layout>
   );
 }
