@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useAuth } from '../components/AuthProvider';
 import { Layout, Navbar } from '../components/layout';
 import { Button, Card } from '../components/ui';
 import PaintingCanvas from '../components/PaintingCanvas';
@@ -24,10 +25,16 @@ export default function JournalPage() {
   ]);
   const [currentPrompt, setCurrentPrompt] = useState(0);
 
-  useEffect(() => { ensureAnonymousAuth(); load(); }, []);
+  const { currentUser } = useAuth();
+
+  useEffect(() => { 
+    if (!currentUser) ensureAnonymousAuth();
+    load(); 
+  }, [currentUser]);
 
   async function load() {
-    const data = await apiGet('/api/journal/list?userId=anon');
+    const uid = currentUser?.uid || 'anon';
+    const data = await apiGet(`/api/journal/list?userId=${uid}`);
     setEntries(data.entries || []);
   }
 
@@ -38,8 +45,9 @@ export default function JournalPage() {
     const sentiment = analyzeSentiment(text);
     setCurrentSentiment(sentiment);
     
+    const uid = currentUser?.uid || 'anon';
     const res = await apiPost('/api/journal/entry', { 
-      userId: 'anon', 
+      userId: uid, 
       text,
       sentiment: sentiment,
       prompt: prompts[currentPrompt]

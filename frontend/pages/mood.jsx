@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react';
+import { useAuth } from '../components/AuthProvider';
 import { Layout, Navbar } from '../components/layout';
 import { Button, Card } from '../components/ui';
 import BreathingExercise from '../components/BreathingExercise';
 import { apiGet, apiPost } from '../lib/api';
 import { ensureAnonymousAuth } from '../lib/firebaseClient';
+// Graphs use Recharts library for trends
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 
 export default function MoodPage() {
   const [mood, setMood] = useState(5);
@@ -12,16 +15,24 @@ export default function MoodPage() {
   const [breathingActive, setBreathingActive] = useState(false);
   const [selectedEmotion, setSelectedEmotion] = useState('');
 
-  useEffect(() => { ensureAnonymousAuth(); fetchTrend(); }, []);
+  const { currentUser } = useAuth();
+
+  useEffect(() => { 
+    // Prefer signed-in user; fallback to anonymous
+    if (!currentUser) ensureAnonymousAuth(); 
+    fetchTrend(); 
+  }, [currentUser]);
 
   async function fetchTrend() {
-    const data = await apiGet('/api/mood/trend?userId=anon');
+    const uid = currentUser?.uid || 'anon';
+    const data = await apiGet(`/api/mood/trend?userId=${uid}`);
     setLogs(data.logs || []);
   }
 
   async function submitMood() {
+    const uid = currentUser?.uid || 'anon';
     await apiPost('/api/mood/log', { 
-      userId: 'anon', 
+      userId: uid, 
       mood, 
       note,
       emotion: selectedEmotion,
@@ -126,29 +137,25 @@ export default function MoodPage() {
 
         {/* Analytics Dashboard */}
         <div className="grid md:grid-cols-2 gap-6">
-          {/* Mood Trend */}
+          {/* Mood Trend (Recharts) */}
           <Card>
             <h3 className="font-semibold mb-4">7-Day Trend</h3>
-            <div className="space-y-2">
-              {logs.slice(-7).map((log, i) => (
-                <div key={log.id} className="flex items-center gap-3">
-                  <div className="text-sm text-white/60 w-16">
-                    {new Date(log.ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                  </div>
-                  <div className="flex-1 bg-white/10 rounded-full h-2">
-                    <div 
-                      className={`h-2 rounded-full ${
-                        log.mood <= 3 ? 'bg-red-400' : 
-                        log.mood <= 6 ? 'bg-yellow-400' : 'bg-green-400'
-                      }`}
-                      style={{ width: `${(log.mood / 10) * 100}%` }}
-                    />
-                  </div>
-                  <div className={`text-sm ${getMoodColor(log.mood)}`}>
-                    {getMoodEmoji(log.mood)} {log.mood}
-                  </div>
-                </div>
-              ))}
+            <div className="h-56">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={logs.slice(-7).map(l => ({
+                  date: new Date(l.ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+                  mood: l.mood
+                }))}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                  <XAxis dataKey="date" tick={{ fill: 'rgba(255,255,255,0.7)' }} />
+                  <YAxis domain={[1, 10]} tick={{ fill: 'rgba(255,255,255,0.7)' }} />
+                  <Tooltip
+                    contentStyle={{ background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.2)', color: 'white' }}
+                    labelStyle={{ color: 'white' }}
+                  />
+                  <Line type="monotone" dataKey="mood" stroke="#8E89FF" strokeWidth={3} dot={{ r: 3, fill: '#8E89FF' }} />
+                </LineChart>
+              </ResponsiveContainer>
             </div>
           </Card>
 

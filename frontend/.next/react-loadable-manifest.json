@@ -1,9 +1,7 @@
 {
   "components\\layout\\Layout.jsx -> gsap": {
     "id": "components\\layout\\Layout.jsx -> gsap",
-    "files": [
-      "static/chunks/_pages-dir-browser_node_modules_gsap_index_js.js"
-    ]
+    "files": []
   },
   "components\\layout\\Layout.jsx -> gsap/ScrollTrigger": {
     "id": "components\\layout\\Layout.jsx -> gsap/ScrollTrigger",

@@ -6,6 +6,7 @@ import {
   signOut,
   onAuthStateChanged 
 } from 'firebase/auth';
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { auth } from '../lib/firebase';
 
 const AuthContext = createContext({});
@@ -42,6 +43,17 @@ export default function AuthProvider({ children }) {
     return signInAnonymously(auth);
   };
 
+  // Google Sign-in
+  // TODO: Enable Google provider in Firebase console
+  const loginWithGoogle = async () => {
+    if (!auth) {
+      console.warn('Firebase Auth not available');
+      throw new Error('Firebase Auth not configured');
+    }
+    const provider = new GoogleAuthProvider();
+    return signInWithPopup(auth, provider);
+  };
+
   const logout = () => {
     if (!auth) {
       console.warn('Firebase Auth not available');
@@ -68,6 +80,7 @@ export default function AuthProvider({ children }) {
     currentUser,
     signup,
     login,
+    loginWithGoogle,
     loginAnonymously,
     logout
   };

@@ -1,6 +1,11 @@
 import { useEffect } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import StaggeredMenu from '../StaggeredMenu';
 
 export default function Navbar() {
+  const router = useRouter();
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
@@ -37,13 +42,46 @@ export default function Navbar() {
     initScrollProgress();
   }, []);
 
+  // Use white logo on the home page, black elsewhere
+  const isHome = router?.pathname === '/';
+  const logoSrc = isHome ? '/image/Logo%20White.png' : '/image/Logo%20Black.png';
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 py-6">
-      <div className="w-1/3"></div>
-      <div className="text-center">
-        <div className="text-white font-medium text-lg tracking-wider">
-          CLARITYAI
+      {/* Left: Menu Button (inline, flush to left edge) */}
+      <div className="w-1/3 relative">
+        <div className="fixed left-0 top-0 z-[70]">
+          <StaggeredMenu
+            position="left"
+            className=""
+            items={[
+              { label: 'Home', ariaLabel: 'Go to home page', link: '/' },
+              { label: 'Profile', ariaLabel: 'View your profile', link: '/profile' },
+              { label: 'Aira AI', ariaLabel: 'Open Aira AI', link: '/chat' },
+              { label: 'Relief Canvas', ariaLabel: 'Open painting relief canvas', link: '/relief' },
+              { label: 'Contact', ariaLabel: 'Get in touch', link: '/contact' },
+            ]}
+            socialItems={[]}
+            displaySocials={false}
+            displayItemNumbering={true}
+            menuButtonColor="#fff"
+            openMenuButtonColor="#000"
+            changeMenuColorOnOpen={true}
+            colors={['#B19EEF', '#5227FF']}
+            logoUrl={logoSrc}
+            accentColor="#5227FF"
+            onMenuOpen={() => {}}
+            onMenuClose={() => {}}
+          />
         </div>
+      </div>
+      <div className="text-center">
+        <Link href="/" aria-label="ClarityAI Home" className="inline-block">
+          {/* White on home, black elsewhere; larger size */}
+          <div className="relative w-36 h-10 mx-auto">
+            <Image src={logoSrc} alt="ClarityAI" fill style={{ objectFit: 'contain' }} />
+          </div>
+        </Link>
       </div>
       <div className="w-1/3 flex justify-end">
         <div className="text-right">
